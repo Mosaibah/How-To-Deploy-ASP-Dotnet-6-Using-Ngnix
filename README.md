@@ -41,14 +41,14 @@ Copyright (C) Microsoft Corporation. All rights reserved.
   {Application_Name} -> /var/www/{Repository_Name}/bin/Debug/net6.0/publish/
 ```
 
-Becarefull when you do that, you need to memorize the LAST TWO LINE
+Be careful when you do that, you need to memorize the last two lines
 ```
   {Application_Name} -> /var/www/{Repository_Name}/bin/Debug/net6.0/{Application_Name}.dll
   {Application_Name} -> /var/www/{Repository_Name}/bin/Debug/net6.0/publish/
 ```
 
 
-After we publish our project, we need to create a `service` to run,stop and mentor that appliction
+After we publish our project, we need to create a `service` to run,stop and monitor that appliction
 We can do that in few Not simple steps
 
 1. To create a new service `sudo nano /etc/systemd/system/{Name_Your_Service}.service`
@@ -72,11 +72,14 @@ Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=false
 [Install]
 WantedBy=multi-user.target
 
-
 ```
-> If you confused in this setp, Please contact me to set a seesion with you [free]
+If you want to change the port you just need to add this line <br/>
+`Environment=ASPNETCORE_URLS=http://127.0.0.1:5001` <br/>
+But make sure that you also change it in the Nginx configuration
 
-And now we cat start our new service <br/>
+> If that confuses you, Please contact me to set a seesion with you [free]
+
+And now we can start our new service <br/>
 `sudo systemctl start {Your_Service_Name}` <br/>  
 and to check if its work or not `sudo systemctl status {Your_Service_Name}`  <br/>
 
@@ -84,6 +87,24 @@ and to check if its work or not `sudo systemctl status {Your_Service_Name}`  <br
 After navigate to `/etc/nginx/site-avalive`, add a new one and put the following block of code
 
 ```
+server {
+ listen 80;
+        listen [::]:80;
 
+        server_name test.mosaibah.com *.test.mosaibah.com;
+
+        location /{
+                proxy_pass http://localhost:5001;
+        }
+}
 ```
+
+#### Adding the certbot
+Just in two steps:
+1. `sudo apt install python3-certbot-nginx`
+2. `sudo certbot --nginx -d {domain}.com`,  and that will change the configuation file in Nginx
+
+
+
+
 
