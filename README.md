@@ -3,7 +3,7 @@ In this small article I will explain how can you deploy yor ASP .NET we applicai
 
 ### How The Reverise Proxy Work?
 
-In very simple word, Reverise Proxy means the clint doesn't know which server are connecting to, see video [Proxy vs. Reverse Proxy](https://www.youtube.com/watch?v=ozhe__GdWC8&t=2s&ab_channel=HusseinNasser)
+In very simple word, Reverise Proxy means the client doesn't know which server are connecting to, see video [Proxy vs. Reverse Proxy](https://www.youtube.com/watch?v=ozhe__GdWC8&t=2s&ab_channel=HusseinNasser)
 ![Screenshot 2022-09-03 222221](https://user-images.githubusercontent.com/76538765/188285148-d15112e0-7ca6-4bd3-ad1d-06650110a8dd.jpg)
 
 ### Setup
