@@ -8,8 +8,8 @@ In very simple word, Reverise Proxy means the client doesn't know which server a
 
 ### Setup
 What we will do?
-- we had Ubontu server in Digitalocean
-- we had a ASP .NET wep app
+- we have Ubontu server in Digitalocean
+- we have a ASP .NET wep app
 ---
 
 > Apps deployed in a reverse proxy configuration allow the proxy to handle connection security (HTTPS). If the proxy also handles HTTPS redirection, there's no need to use HTTPS Redirection Middleware.
@@ -27,7 +27,7 @@ After that push it to Github
 And the go throw your Ubontu server using ssh
 1. `cd /var/www`
 2. clone your repository `sudo git clone {repo_url}`
-3. before be build, we need to test our code `sudo dotnet run`, If the project work without error we can know exit from the app by `cntl + c`
+3. before we build, we need to test our code `sudo dotnet run`, If the project work without errors we can now exit from the app by `cntl + c`
 4. build the app `sudo dotnet build`
 5. publish the app `sudo dotnet publish`
 you will see something like this
@@ -48,8 +48,8 @@ Be careful when you do that, you need to memorize the last two lines
 ```
 
 
-After we publish our project, we need to create a `service` to run,stop and monitor that appliction
-We can do that in few Not simple steps
+After we publish our project, we need to create a `service` to run,stop and monitor our appliction
+We can do that in a few Not simple steps
 
 1. To create a new service `sudo nano /etc/systemd/system/{Name_Your_Service}.service`
  
@@ -73,7 +73,9 @@ Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=false
 WantedBy=multi-user.target
 
 ```
-If you want to change the port you just need to add this line <br/>
+If you want to change the port you need to add this line <br/>
+If want to run another application in the same server, you need to create a new server, but note that in the configuration of app you also need to change the port that applicatio will run on it <br/>
+
 `Environment=ASPNETCORE_URLS=http://127.0.0.1:5001` <br/>
 But make sure that you also change it in the Nginx configuration
 
