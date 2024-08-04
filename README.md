@@ -1,36 +1,32 @@
-# How-To-Deploy-ASP-Dotnet-6-Using-Ngnix
-In this small article I will explain how can you deploy yor ASP .NET we applicaiton in Ubontu server using Nginx
+# How to Deploy ASP.NET 6 Using Nginx
 
-### How The Reverise Proxy Work?
-
-In very simple word, Reverise Proxy means the client doesn't know which server are connecting to, see video [Proxy vs. Reverse Proxy](https://www.youtube.com/watch?v=ozhe__GdWC8&t=2s&ab_channel=HusseinNasser)
-![Screenshot 2022-09-03 222221](https://user-images.githubusercontent.com/76538765/188285148-d15112e0-7ca6-4bd3-ad1d-06650110a8dd.jpg)
+In this brief article, I will explain how to deploy your ASP.NET web application on an Ubuntu server using Nginx.
 
 ### Setup
-What we will do?
-- we have Ubontu server in Digitalocean
-- we have a ASP .NET wep app
+We will:
+- Use an Ubuntu server on DigitalOcean
+- Deploy an ASP.NET web application
 ---
 
-> Apps deployed in a reverse proxy configuration allow the proxy to handle connection security (HTTPS). If the proxy also handles HTTPS redirection, there's no need to use HTTPS Redirection Middleware.
-see [Require HTTPS](https://docs.microsoft.com/en-us/aspnet/core/security/enforcing-ssl?view=aspnetcore-6.0&tabs=visual-studio#require-https)
+> When apps are deployed in a reverse proxy configuration, the proxy handles connection security (HTTPS). If the proxy also manages HTTPS redirection, there's no need to use HTTPS Redirection Middleware.
+for more information see [Require HTTPS](https://docs.microsoft.com/en-us/aspnet/core/security/enforcing-ssl?view=aspnetcore-6.0&tabs=visual-studio#require-https)
 
 ---
 ### Code
-In Program.cs file, we should remove Force Redirect command, because we want to run our applicaiton without https, In our Nginx server we will configure the ssl cert. from there, so we don't need to force the appliction from code.
+In the Program.cs file, remove the Force Redirect command. We want to run our application without HTTPS because we'll configure the SSL certificate in our Nginx server. Therefore, we don't need to force HTTPS redirection in the application code.
 ```diff
 - app.UseHttpsRedirection();
 + //app.UseHttpsRedirection();
 ```
 
-After that push it to Github
-And the go throw your Ubontu server using ssh
-1. `cd /var/www`
-2. clone your repository `sudo git clone {repo_url}`
-3. before we build, we need to test our code `sudo dotnet run`, If the project work without errors we can now exit from the app by `cntl + c`
-4. build the app `sudo dotnet build`
-5. publish the app `sudo dotnet publish`
-you will see something like this
+After making this change, push your code to GitHub.
+Next, access your Ubuntu server via SSH and follow these steps:
+1. Navigate to the web directory `cd /var/www`
+2. Clone your repository `sudo git clone {repo_url}`
+3. Before building, test your code: `sudo dotnet run`, If the project runs without errors, exit the app using `cntl + c`
+4. Build the app `sudo dotnet build`
+5. Publish the app `sudo dotnet publish`
+You should see output similar to this:
 ```
 Microsoft (R) Build Engine version 17.0.0 for .NET
 Copyright (C) Microsoft Corporation. All rights reserved.
@@ -41,19 +37,20 @@ Copyright (C) Microsoft Corporation. All rights reserved.
   {Application_Name} -> /var/www/{Repository_Name}/bin/Debug/net6.0/publish/
 ```
 
-Be careful when you do that, you need to memorize the last two lines
+Take note of the last two lines, as you'll need this information later:
 ```
   {Application_Name} -> /var/www/{Repository_Name}/bin/Debug/net6.0/{Application_Name}.dll
   {Application_Name} -> /var/www/{Repository_Name}/bin/Debug/net6.0/publish/
 ```
 
 
-After we publish our project, we need to create a `service` to run,stop and monitor our appliction
-We can do that in a few Not simple steps
+After publishing your project, create a `service` to run, stop, and monitor your application. Follow these steps:
 
-1. To create a new service `sudo nano /etc/systemd/system/{Name_Your_Service}.service`
+
+
+1. Create a new service file `sudo nano /etc/systemd/system/{Name_Your_Service}.service`
  
-2- Add this block
+2- Add this configuration block
 ```
 [Unit]
 Description=Server - Side
@@ -73,20 +70,19 @@ Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=false
 WantedBy=multi-user.target
 
 ```
-If you want to change the port you need to add this line <br/>
+To change the port, add this line: <br/>
 If want to run another application in the same server, you need to create a new server, but note that in the configuration of app you also need to change the port that applicatio will run on it <br/>
 
 `Environment=ASPNETCORE_URLS=http://127.0.0.1:5001` <br/>
-But make sure that you also change it in the Nginx configuration
+Remember to also change the port in the Nginx configuration if you do this.
+> If you're confused, please contact me to schedule a free session. [free]
 
-> If that confuses you, Please contact me to set a seesion with you [free]
-
-And now we can start our new service <br/>
+Now, start your new service: <br/>
 `sudo systemctl start {Your_Service_Name}` <br/>  
-and to check if its work or not `sudo systemctl status {Your_Service_Name}`  <br/>
+To check if it's working: `sudo systemctl status {Your_Service_Name}`  <br/>
 
-#### Nginx
-After navigate to `/etc/nginx/site-avalive`, add a new one and put the following block of code
+#### Nginx Configuration
+Navigate to `/etc/nginx/site-avalive`, add a new file, and insert the following code block:
 
 ```
 server {
@@ -101,11 +97,17 @@ server {
 }
 ```
 
-#### Adding the certbot
-Just in two steps:
-1. `sudo apt install python3-certbot-nginx`
-2. `sudo certbot --nginx -d {domain}.com`,  and that will change the configuation file in Nginx
+#### Adding SSL with Certbot
+Follow these two steps:
+1. Install Certbot: `sudo apt install python3-certbot-nginx`
+2. Obtain and install a certificate:  `sudo certbot --nginx -d {domain}.com`
+This will automatically update your Nginx configuration file to use HTTPS.
 
+
+#### How Does a Reverse Proxy Work?
+
+In simple terms, a reverse proxy acts as an intermediary between clients and servers. The client doesn't know which server it's connecting to. For a visual explanation, watch this video: [Proxy vs. Reverse Proxy](https://www.youtube.com/watch?v=ozhe__GdWC8&t=2s&ab_channel=HusseinNasser)
+![Screenshot 2022-09-03 222221](https://user-images.githubusercontent.com/76538765/188285148-d15112e0-7ca6-4bd3-ad1d-06650110a8dd.jpg)
 
 
 
